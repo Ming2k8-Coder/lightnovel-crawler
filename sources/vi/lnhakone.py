@@ -16,11 +16,11 @@ class ListNovelCrawler(Crawler):
     has_mtl = True
     base_url = [
         "https://ln.hako.vn/",
-        "https://docln.net/",
+        "https://docln.sbs/",
     ]
 
     def initialize(self):
-        self.init_executor(1)
+        self.init_executor(ratelimit=0.6)
 
     def search_novel(self, query):
         query = quote_plus(query.lower())
@@ -85,3 +85,12 @@ class ListNovelCrawler(Crawler):
         soup = self.get_soup(chapter["url"])
         contents = soup.select("#chapter-content p")
         return "".join([str(p) for p in contents])
+
+    def download_image(self, url: str, **kwargs):
+        return super().download_image(
+            url,
+            headers={
+                "referer": "https://ln.hako.vn",
+                "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            },
+        )
